@@ -192,7 +192,7 @@ async function getSession(chatId: number): Promise<UserSession> {
 }
 
 async function saveSession(chatId: number, session: UserSession) {
-  await kv.set(["sessions", chatId], session);
+  await kv.set(["sessions", chatId], session, {expireIn: 3600000});
 }
 
 async function deleteSession(chatId: number) {
