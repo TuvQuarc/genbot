@@ -642,6 +642,9 @@ async function main(): Promise<void> {
   
   console.log("Bot Template Generator");
   console.log("=========================");
+
+  // Delete old webhook
+  await deleteWebhook();
   
   // Setup webhook if URL is provided
   if (WEBHOOK_URL) {
@@ -668,13 +671,4 @@ async function shutdown() {
   }
 }
 
-// Register signal handlers
-if (Deno.env.get("DENO_REGION") === undefined) {
-  Deno.addSignalListener("SIGINT", shutdown);
-  Deno.addSignalListener("SIGTERM", shutdown);
-}
-
-// Entry point
-if (import.meta.main) {
-  await main();
-}
+await main();
