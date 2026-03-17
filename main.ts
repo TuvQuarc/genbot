@@ -7,7 +7,7 @@ import JSZip from "jszip";
 const BOT_TOKEN = Deno.env.get("BOT_TOKEN") || "";
 const WEBHOOK_URL = Deno.env.get("WEBHOOK_URL") || ""; // e.g., https://your-domain.com/webhook
 const WEBHOOK_SECRET = Deno.env.get("WEBHOOK_SECRET") || ""; // Secret token for webhook validation
-const PORT = parseInt(Deno.env.get("PORT") || "8000");
+const PORT = 8000;
 
 // ==========================================
 // Templates for static files
