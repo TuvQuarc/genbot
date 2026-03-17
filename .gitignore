@@ -1,0 +1,17 @@
+# Environments
+.deno/
+.env
+.env.*
+!.env.sample
+
+# IDEs
+.idea/
+.vscode/
+
+# Logs and databases
+*.log
+*.sqlite
+
+# Other files
+*.bak
+.DS_Store

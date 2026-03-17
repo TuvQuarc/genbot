@@ -1,0 +1,9 @@
+{
+  "tasks": {
+    "dev": "deno run --watch --allow-net --allow-env --allow-read --allow-write --env main.tsx",
+    "start": "deno run --allow-net --allow-env --allow-read --allow-write --env main.tsx"
+  },
+  "imports": {
+    "jszip": "npm:jszip@^3.10.1"
+  }
+}
