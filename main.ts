@@ -296,28 +296,10 @@ async function sendMessage(chatId: number, text: string, parseMode: "HTML" | "Ma
   }
 }
 
-// async function sendDocument(chatId: number, document: Uint8Array, filename: string) {
-//   const formData = new FormData();
-//   formData.append("chat_id", chatId.toString());
-//   formData.append("document", new Blob([document as any]), filename);
-  
-//   const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, {
-//     method: "POST",
-//     body: formData,
-//   });
-  
-//   if (!response.ok) {
-//     console.error("Failed to send document:", await response.text());
-//     return false;
-//   }
-//   return true;
-// }
-
 async function sendDocument(chatId: number, document: Uint8Array, filename: string) {
   const formData = new FormData();
   formData.append("chat_id", chatId.toString());
   
-  // Приводим к any, чтобы TS не ругался на потенциальный SharedArrayBuffer
   const fileBlob = new Blob([document as any], { type: "application/zip" });
   formData.append("document", fileBlob, filename);
   
@@ -359,7 +341,7 @@ Hi! I'll help you create a Telegram bot template in Python using aiogram and uv.
   
   userSessions.set(chatId, { step: "waiting_name" });
   await sendMessage(chatId, welcomeText);
-  await sendMessage(chatId, "✏️ Введи имя для твоего бота:");
+  await sendMessage(chatId, "Enter a name for your bot:");
 }
 
 async function handleHelp(chatId: number) {
