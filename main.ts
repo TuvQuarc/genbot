@@ -505,11 +505,11 @@ Commands: <b>${validCommands.join(", ")}</b>
 3. Add your token to the .env file
 4. Run: <code>uv run python -m src.app.main</code>
 
+<i>Enjoying the generator? Use /donate to support the project with some stars ⭐️</i>
+
 Send /start to create another project!
         `);
         
-        // Send donations button
-        await sendStarsInvoice(chatId, 50);
       } else {
         await sendMessage(chatId, "Failed to send the file. Please try again later.");
       }
@@ -582,6 +582,9 @@ async function handleWebhook(request: Request): Promise<Response> {
             break;
           case "/cancel":
             await handleCancel(chatId);
+            break;
+          case "/donate":
+            await sendStarsInvoice(chatId, 50);
             break;
           default:
             await sendMessage(chatId, "Unknown command. Send /help for assistance.");
