@@ -640,7 +640,7 @@ async function main(): Promise<void> {
     Deno.exit(1);
   }
   
-  console.log("🤖 Bot Template Generator");
+  console.log("Bot Template Generator");
   console.log("=========================");
   
   // Setup webhook if URL is provided
