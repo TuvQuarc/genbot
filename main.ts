@@ -390,30 +390,25 @@ async function handleMessage(chatId: number, text: string) {
   const session = await getSession(chatId);
   
   if (session.step === "waiting_name") {
-    // Validate and normalize bot name
-    const rawName = text.trim();
-    
-    if (rawName.length < 1) {
-      await sendMessage(chatId, "Name cannot be empty. Try again:");
+    const cleanName = text.trim().startsWith("@") ? text.trim().slice(1) : text.trim();
+    const normalizedName = normalizeBotName(cleanName);
+
+    if (normalizedName.length <= 3) {
+      await sendMessage(chatId, "Name is too short. Try again:");
       return;
     }
-    
-    if (rawName.length > 32) {
-      await sendMessage(chatId, "Name is too long (max 32 characters). Try again:");
+
+    if (normalizedName.length > 32) {
+      await sendMessage(chatId, "The resulting name would be too long (max 32 chars including 'bot'). Try again:");
       return;
     }
-    
-    // Check for valid characters (only latin letters, numbers, underscores)
+
     const validPattern = /^[a-zA-Z0-9_]+$/;
-    const cleanName = rawName.startsWith("@") ? rawName.slice(1) : rawName;
-    
-    if (!validPattern.test(cleanName)) {
-      await sendMessage(chatId, "Name can only contain Latin letters, numbers, and underscores. Try again:");
+    if (!validPattern.test(normalizedName)) {
+      await sendMessage(chatId, "Name can only contain Latin letters, numbers, and underscores.");
       return;
     }
-    
-    const normalizedName = normalizeBotName(rawName);
-    
+
     // Inform user about normalization if it happened
     if (normalizedName.toLowerCase() !== cleanName.toLowerCase()) {
       await sendMessage(chatId, `I've automatically updated the name: <b>${cleanName}</b> → <b>${normalizedName}</b>\n\n(Per Telegram requirements, the bot name must end in "bot")`);
