@@ -32,13 +32,8 @@ The generator creates a project with the following architecture:
 
 ## Setup and Execution
 
-Это дельное замечание. Для Webhook-бота это самое критическое условие, без которого он просто не получит ни одного сообщения от Telegram.
-
-Вот обновленный раздел **Setup and Execution** для вашего `README.md` с добавленным блоком предупреждения (Warning):
-
----
-
 ### 1. Environment Preparation
+
 Create a `.env` file in the root directory of the project:
 ```text
 BOT_TOKEN=your_bot_token
