@@ -663,8 +663,10 @@ async function shutdown() {
 }
 
 // Register signal handlers
-Deno.addSignalListener("SIGINT", shutdown);
-Deno.addSignalListener("SIGTERM", shutdown);
+if (Deno.env.get("DENO_REGION") === undefined) {
+  Deno.addSignalListener("SIGINT", shutdown);
+  Deno.addSignalListener("SIGTERM", shutdown);
+}
 
 // Entry point
 if (import.meta.main) {
