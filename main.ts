@@ -386,6 +386,26 @@ async function handleCancel(chatId: number) {
   await sendMessage(chatId, "Operation canceled. Send /start to start over.");
 }
 
+async function sendStarsInvoice(chatId: number, amount: number) {
+  const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendInvoice`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: chatId,
+      title: "Support the Project",
+      description: `Donate ${amount} stars ⭐️ to support the Bot Template Generator`,
+      payload: `stars_donate_${amount}`,
+      currency: "XTR",
+      prices: [{ label: "Stars", amount: amount }],
+      provider_token: "",
+    }),
+  });
+
+  if (!response.ok) {
+    console.error("Failed to send invoice:", await response.text());
+  }
+}
+
 async function handleMessage(chatId: number, text: string) {
   const session = await getSession(chatId);
   
@@ -487,6 +507,9 @@ Commands: <b>${validCommands.join(", ")}</b>
 
 Send /start to create another project!
         `);
+        
+        // Send donations button
+        await sendStarsInvoice(chatId, 50);
       } else {
         await sendMessage(chatId, "Failed to send the file. Please try again later.");
       }
@@ -520,6 +543,25 @@ async function handleWebhook(request: Request): Promise<Response> {
   
   try {
     const update = await request.json();
+
+    // Handle donations
+    if (update.pre_checkout_query) {
+      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerPreCheckoutQuery`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pre_checkout_query_id: update.pre_checkout_query.id,
+          ok: true,
+        }),
+      });
+      return new Response("OK", { status: 200 });
+    }
+
+    // Handle update.message.successful_payment
+    if (update.message?.successful_payment) {
+      await sendMessage(update.message.chat.id, "Thank you so much for your support! 🌟🌟🌟");
+      return new Response("OK", { status: 200 });
+    }
     
     // Handle message
     if (update.message) {
