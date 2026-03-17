@@ -5,7 +5,6 @@ import JSZip from "jszip";
 // ==========================================
 
 const BOT_TOKEN = Deno.env.get("BOT_TOKEN") || "";
-const WEBHOOK_URL = Deno.env.get("WEBHOOK_URL") || ""; // e.g., https://your-domain.com/webhook
 const WEBHOOK_SECRET = Deno.env.get("WEBHOOK_SECRET") || ""; // Secret token for webhook validation
 const PORT = 8000;
 
@@ -570,40 +569,6 @@ async function handleWebhook(request: Request): Promise<Response> {
 }
 
 // ==========================================
-// Webhook Setup
-// ==========================================
-
-async function setupWebhook(): Promise<void> {
-  if (!WEBHOOK_URL) {
-    console.log("WEBHOOK_URL not set, skipping webhook setup");
-    return;
-  }
-  
-  const url = `https://api.telegram.org/bot${BOT_TOKEN}/setWebhook`;
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      url: WEBHOOK_URL,
-      secret_token: WEBHOOK_SECRET || undefined,
-      allowed_updates: ["message"],
-    }),
-  });
-  
-  const result = await response.json();
-  if (result.ok) {
-    console.log("Webhook set successfully:", WEBHOOK_URL);
-  } else {
-    console.error("Failed to set webhook:", result);
-  }
-}
-
-async function deleteWebhook(): Promise<void> {
-  const url = `https://api.telegram.org/bot${BOT_TOKEN}/deleteWebhook`;
-  await fetch(url, { method: "POST" });
-}
-
-// ==========================================
 // HTTP Server
 // ==========================================
 
@@ -632,7 +597,7 @@ function startServer(): void {
 // Main Entry Point
 // ==========================================
 
-async function main(): Promise<void> {
+function main(): void {
   // Validate configuration
   if (!BOT_TOKEN) {
     console.error("BOT_TOKEN environment variable is required!");
@@ -643,32 +608,8 @@ async function main(): Promise<void> {
   console.log("Bot Template Generator");
   console.log("=========================");
 
-  // Delete old webhook
-  await deleteWebhook();
-  
-  // Setup webhook if URL is provided
-  if (WEBHOOK_URL) {
-    await setupWebhook();
-  } else {
-    console.log("Running without webhook. Set WEBHOOK_URL to enable webhook mode.");
-    console.log("For local development, you can use polling mode or tools like ngrok.");
-  }
-  
   // Start HTTP server
   startServer();
 }
 
-// Graceful shutdown
-async function shutdown() {
-  console.log("\nShutting down...");
-  try {
-    await deleteWebhook();
-  } catch (e) {
-    console.error("Error deleting webhook:", e);
-  }
-  if (Deno.env.get("DENO_REGION") === undefined) {
-    Deno.exit(0);
-  }
-}
-
-await main();
+main();
