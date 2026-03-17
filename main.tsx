@@ -624,7 +624,7 @@ function startServer(): void {
     return new Response("Not Found", { status: 404 });
   };
   
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
   Deno.serve({ port: PORT }, handler);
 }
 
