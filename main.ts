@@ -184,7 +184,20 @@ interface UserSession {
   commands?: string[];
 }
 
-const userSessions = new Map<number, UserSession>();
+const kv = await Deno.openKv(); 
+
+async function getSession(chatId: number): Promise<UserSession> {
+  const res = await kv.get<UserSession>(["sessions", chatId]);
+  return res.value || { step: "idle" };
+}
+
+async function saveSession(chatId: number, session: UserSession) {
+  await kv.set(["sessions", chatId], session);
+}
+
+async function deleteSession(chatId: number) {
+  await kv.delete(["sessions", chatId]);
+}
 
 // ==========================================
 // Project Name Validation
@@ -339,7 +352,7 @@ Hi! I'll help you create a Telegram bot template in Python using aiogram and uv.
 <i>Note: The bot name must end in "bot" according to Telegram requirements.</i>
   `;
   
-  userSessions.set(chatId, { step: "waiting_name" });
+  await saveSession(chatId, { step: "waiting_name" });
   await sendMessage(chatId, welcomeText);
   await sendMessage(chatId, "Enter a name for your bot:");
 }
@@ -369,12 +382,12 @@ This bot generates templates for Python-based Telegram bots.
 }
 
 async function handleCancel(chatId: number) {
-  userSessions.delete(chatId);
+  await deleteSession(chatId);
   await sendMessage(chatId, "Operation canceled. Send /start to start over.");
 }
 
 async function handleMessage(chatId: number, text: string) {
-  const session = userSessions.get(chatId) || { step: "idle" };
+  const session = await getSession(chatId);
   
   if (session.step === "waiting_name") {
     // Validate and normalize bot name
@@ -408,7 +421,7 @@ async function handleMessage(chatId: number, text: string) {
     
     session.projectName = normalizedName;
     session.step = "waiting_commands";
-    userSessions.set(chatId, session);
+    await saveSession(chatId, session);
     
     await sendMessage(chatId, `
 Great! Project name: <b>${normalizedName}</b>
@@ -489,7 +502,7 @@ Send /start to create another project!
     }
     
     // Clear session
-    userSessions.delete(chatId);
+    await deleteSession(chatId);
     
   } else {
     // Unknown state
