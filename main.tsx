@@ -658,8 +658,14 @@ async function main(): Promise<void> {
 // Graceful shutdown
 async function shutdown() {
   console.log("\nShutting down...");
-  await deleteWebhook();
-  Deno.exit(0);
+  try {
+    await deleteWebhook();
+  } catch (e) {
+    console.error("Error deleting webhook:", e);
+  }
+  if (Deno.env.get("DENO_REGION") === undefined) {
+    Deno.exit(0);
+  }
 }
 
 // Register signal handlers
